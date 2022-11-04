@@ -4,33 +4,27 @@ timedatectl set-timezone Asia/Kolkata
 
 timedatectl status
 
-loadkeys /usr/share/kdb/keymaps/i386/qwerty/us.map.gz
-
 lsblk
 
 fdisk -l 
-
-sleep 20
-
-clear 
 
 echo "CREATE PARTITIONS ...."
 
 echo -e "\nEnter your Drive : "
 
-read drive 
+read -e drive 
 
 cfdisk $drive
 
 echo -e "\nEnter the linux partition: "
 
-read partition
+read -e partition
 
 mkfs.ext4 $partition
 
 echo -e "\nEnter the Swap partition: "
 
-read spartition
+read -e spartition
 
 mkswap $spartition
 
@@ -52,7 +46,7 @@ pacman -S archlinux-keyring pacman-contrib
 
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
-pacstarp -i /mnt archlinux-keyring base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio
+pacstrap -i /mnt archlinux-keyring base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio
 
 genfstab -U /mnt > /mnt/etc/fstab
 
