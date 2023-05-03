@@ -80,3 +80,67 @@ echo "Finish Reboot now"
 exit
 
 # (3/3)
+#!/bin/bash
+
+git_cfg() {
+
+	echo -e "\n[!] Setting Up Git config " 
+	git config --global user.email "alansedp@gmail.com"
+	git config --global user.name "shadowelite"
+	git config --global credential.helper store
+	git config --global core.editor nvim
+}
+
+yay_install() {
+
+	clear
+	echo -e "[*] Installing AUR helper "
+	sudo pacman -S --needed --needed git base-devel yay
+
+}
+
+hyprland_setup() {
+	
+	echo -e "\n[*] Installing Hyprland Essenstial pkgs "
+	yay -S --noconfirm hyprland-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git dunst nwg-look-bin nwg-panel nwg-dock-hyprland-bin nwg-drawer-bin rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal jq zsh nodejs npm
+
+}
+
+user_apps() {
+
+	echo -e "\n[*] Installing User Applications and Utils "
+	yay -S --noconfirm stow neovim man bat xdg-user-dirs firefox discord telegram-desktop thunar gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpv sxiv tauon-music-box bluez-tools bluez-utils obs-studio wlrobs-hg bluetoothctl 
+	
+}
+
+sec_app() {
+
+	echo -e "\n[*] Installing Security Testing Applications "
+	yay -S --noconfirm python python3 python-pip gdb radare2 ida-free burpsuite ghidra ghex nmap metasploit
+	pip3 install pwntools
+}
+
+install_dots() {
+
+	echo -e "\n[*] Installing Dotfiles "
+	rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
+	mkdir ~/.config
+	git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
+	cd ~/.dot
+	stow */
+	cd
+}
+
+yay_install 
+git_cfg 
+hyprland_setup 
+user_apps 
+sec_app 
+
+zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
+
+chsh
+install_dots
+
+mkdir ~/code ~/ctf ~/imp 
+echo "Everything is Done , Now Reboot"
