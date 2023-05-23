@@ -50,7 +50,7 @@ pacman -S archlinux-keyring pacman-contrib
 
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 
-pacstrap -i /mnt archlinux-keyring base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio
+pacstrap -i /mnt archlinux-keyring base base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio
 
 genfstab -U /mnt > /mnt/etc/fstab
 
