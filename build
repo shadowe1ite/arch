@@ -20,6 +20,8 @@ read -e drive
 
 cfdisk $drive
 
+clear && lsblk
+
 echo -e "\nEnter the linux partition: "
 
 read -e partition
