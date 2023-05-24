@@ -1,60 +1,74 @@
 #!/bin/sh
-
+# EliteArch
+# (1/2)
+printf '\033c'
+echo "Welcome to Elite ArchLinux installer"
 timedatectl set-timezone Asia/Kolkata
-
 timedatectl status
-
 loadkeys us
-
 timedatectl set-ntp true
-
 lsblk
-
 fdisk -l 
-
 echo "CREATE PARTITIONS ...."
-
 echo -e "\nEnter your Drive : "
-
 read -e drive 
-
 cfdisk $drive
-
 clear && lsblk
-
 echo -e "\nEnter the linux partition: "
-
 read -e partition
-
 mkfs.ext4 $partition
-
 echo -e "\nEnter the Swap partition: "
-
 read -e spartition
-
 mkswap $spartition
-
 swapon $spartition
-
 lsblk 
-
 mount $partition /mnt
-
 lsblk 
-
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
-
 ls /etc/pacman.d/
-
 pacman -Sy
-
 pacman -S archlinux-keyring pacman-contrib
-
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
-
 pacstrap -i /mnt archlinux-keyring base base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio
-
 genfstab -U /mnt > /mnt/etc/fstab
-
+sed '1,/^#(2/2)$/d' `basename $0` > /mnt/install.sh
+chmod +x /mnt/install.sh
+arch-chroot /mnt ./install.sh
 arch-chroot /mnt
 
+# (2/2)
+#!/bin/sh
+printf '\033c'
+ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
+hwclock --systohc
+echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
+locale-gen 
+echo "LANG=en_US.UTF-8" > /etc/locale.conf
+echo "KEYMAP=us" > /etc/vconsole.conf
+echo "Hostname: "
+read hostname
+echo $hostname > /etc/hostname
+echo "127.0.0.1       localhost" >> /etc/hosts
+echo "::1             localhost" >> /etc/hosts
+echo "127.0.1.1       $hostname.localdomain $hostname" >> /etc/hosts
+mkinitcpio -P
+passwd
+pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools
+fdisk -l
+echo "Enter EFI partition: " 
+read efipartition
+mkdir /boot/efi
+mount $efipartition /boot/efi
+lsblk
+grub-install --target=x86_64-efi --bootloader-id=GRUB --recheck 
+grub-mkconfig -o /boot/grub/grub.cfg
+systemctl enable connman.service
+systemctl enable NetworkManager.service
+systemctl enable dhcpcd.service
+echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+echo "Enter Username: "
+read username
+useradd -m $username
+usermod -aG wheel,storage,power $username
+passwd $username
+echo "Finish Reboot now"
