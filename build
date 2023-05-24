@@ -10,14 +10,14 @@ timedatectl set-ntp true
 lsblk
 fdisk -l 
 echo "CREATE PARTITIONS ...."
-echo -e "\nEnter your Drive : "
+echo -ne "\nEnter your Drive : "
 read -e drive 
 cfdisk $drive
 clear && lsblk
-echo -e "\nEnter the linux partition: "
+echo -ne "\nEnter the linux partition: "
 read -e partition
 mkfs.ext4 $partition
-echo -e "\nEnter the Swap partition: "
+echo -ne "\nEnter the Swap partition: "
 read -e spartition
 mkswap $spartition
 swapon $spartition
@@ -45,7 +45,7 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen 
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "KEYMAP=us" > /etc/vconsole.conf
-echo "Hostname: "
+echo -ne "Hostname: "
 read hostname
 echo $hostname > /etc/hostname
 echo "127.0.0.1       localhost" >> /etc/hosts
@@ -55,7 +55,7 @@ mkinitcpio -P
 passwd
 pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools
 fdisk -l
-echo "Enter EFI partition: " 
+echo -ne "Enter EFI partition: " 
 read -e efipartition
 mkdir /boot/efi
 mount $efipartition /boot/efi
@@ -66,7 +66,7 @@ systemctl enable connman.service
 systemctl enable NetworkManager.service
 systemctl enable dhcpcd.service
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
-echo "Enter Username: "
+echo -ne "Enter Username: "
 read username
 useradd -m $username
 usermod -aG wheel,storage,power $username
