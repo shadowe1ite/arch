@@ -1,6 +1,6 @@
 #!/bin/sh
 # EliteArch
-# (1/2)
+# (1/3)
 printf '\033c'
 echo "Welcome to Elite ArchLinux installer"
 timedatectl set-timezone Asia/Kolkata
@@ -31,12 +31,12 @@ pacman -S archlinux-keyring pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 pacstrap -i /mnt archlinux-keyring base base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio
 genfstab -U /mnt > /mnt/etc/fstab
-sed '1,/^# (2\/2)$/d' `basename $0` > /mnt/install.sh
+sed '1,/^# (2\/3)$/d' `basename $0` > /mnt/install.sh
 chmod +x /mnt/install.sh
 arch-chroot /mnt ./install.sh
 arch-chroot /mnt
 
-# (2/2)
+# (2/3)
 #!/bin/sh
 printf '\033c'
 ln -sf /usr/share/zoneinfo/Asia/Kolkata /etc/localtime
@@ -71,4 +71,12 @@ read username
 useradd -m $username
 usermod -aG wheel,storage,power $username
 passwd $username
+hypr_el=/home/$username/hypr_install.sh
+sed '1,/^# (3\/3)$/d' hypr_install.sh > $hypr_el
+chown $username:$username $hypr_el
+chmod +x $hypr_el
+su -c $hypr_el -s /bin/sh $username
 echo "Finish Reboot now"
+exit
+
+# (3/3)
