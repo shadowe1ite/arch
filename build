@@ -62,7 +62,6 @@ mount $efipartition /boot/efi
 lsblk
 grub-install --target=x86_64-efi --bootloader-id=GRUB --recheck 
 grub-mkconfig -o /boot/grub/grub.cfg
-systemctl enable connman.service
 systemctl enable NetworkManager.service
 systemctl enable dhcpcd.service
 rm /bin/sh
