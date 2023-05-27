@@ -147,3 +147,4 @@ install_dots
 
 mkdir ~/code ~/ctf ~/imp 
 echo "Everything is Done , Now Reboot"
+exit
