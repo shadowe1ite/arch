@@ -111,7 +111,7 @@ hyprland_setup() {
 	echo -e "\n[*] Installing Hyprland Essenstial pkgs "
 	yay -S --noconfirm hyprland-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git dunst nwg-look-bin nwg-panel nwg-dock-hyprland-bin nwg-drawer-bin rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal jq zsh nodejs npm wl-clipboard wl-clip-persist-git cliphist-bin
 
-	sudo pacman -Rnsdd xdg-desktop-portal-kde xdg-desktop-portal-gnome 
+	sudo pacman -Rnsdd --noconfirm xdg-desktop-portal-kde xdg-desktop-portal-gnome 
 }
 
 user_apps() {
