@@ -72,7 +72,7 @@ useradd -m $username
 usermod -aG wheel,storage,power $username
 passwd $username
 hypr_el=/home/$username/hypr_install.sh
-sed '1,/^# (3\/3)$/d' hypr_install.sh > $hypr_el
+sed '1,/^# (3\/3)$/d' install.sh > $hypr_el
 chown $username:$username $hypr_el
 chmod +x $hypr_el
 su -c $hypr_el -s /bin/sh $username
