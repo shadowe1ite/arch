@@ -81,7 +81,8 @@ exit
 
 # (3/3)
 #!/bin/bash
-
+printf '\033c'
+cd $HOME
 git_cfg() {
 
 	echo -e "\n[!] Setting Up Git config " 
