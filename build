@@ -95,7 +95,7 @@ yay_install() {
 
 	clear
 	echo -e "[*] Installing AUR helper "
-	sudo pacman -S --needed --needed git base-devel yay
+	pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -si
 
 }
 
