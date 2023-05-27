@@ -29,7 +29,8 @@ ls /etc/pacman.d/
 pacman -Sy
 pacman -S archlinux-keyring pacman-contrib
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
-pacstrap -i /mnt archlinux-keyring base base-devel linux linux-headers linux-firmware intel-ucode sudo neovim git neofetch networkmanager dhcpcd pulseaudio dash 
+pacstrap -i /mnt archlinux-keyring base base-devel linux linux-headers linux-firmware intel-ucode sudo 
+ 
 genfstab -U /mnt > /mnt/etc/fstab
 sed '1,/^# (2\/3)$/d' `basename $0` > /mnt/install.sh
 chmod +x /mnt/install.sh
@@ -53,7 +54,7 @@ echo "::1             localhost" >> /etc/hosts
 echo "127.0.1.1       $hostname.localdomain $hostname" >> /etc/hosts
 mkinitcpio -P
 passwd
-pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools
+pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools networkmanager network-manager-applet wireless_tools wpa_supplicant dialog ntfs-3g base-devel dhcpcd pulseaudio dash bluez-tools bluez-utils neovim git
 fdisk -l
 echo -ne "Enter EFI partition: " 
 read -e efipartition
@@ -64,6 +65,7 @@ grub-install --target=x86_64-efi --bootloader-id=GRUB --recheck
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager.service
 systemctl enable dhcpcd.service
+systemctl enable bluetooth.service
 rm /bin/sh
 ln -s dash /bin/sh
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
@@ -107,22 +109,23 @@ yay_install() {
 hyprland_setup() {
 	
 	echo -e "\n[*] Installing Hyprland Essenstial pkgs "
-	yay -S --noconfirm hyprland-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git dunst nwg-look-bin nwg-panel nwg-dock-hyprland-bin nwg-drawer-bin rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal jq zsh nodejs npm
+	yay -S --noconfirm hyprland-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git dunst nwg-look-bin nwg-panel nwg-dock-hyprland-bin nwg-drawer-bin rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal jq zsh nodejs npm wl-clipboard wl-clip-persist-git cliphist-bin
 
+	sudo pacman -Rnsdd xdg-desktop-portal-kde xdg-desktop-portal-gnome 
 }
 
 user_apps() {
 
 	echo -e "\n[*] Installing User Applications and Utils "
-	yay -S --noconfirm stow neovim man bat xdg-user-dirs firefox discord telegram-desktop thunar gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpv sxiv tauon-music-box bluez-tools bluez-utils obs-studio wlrobs-hg bluetoothctl 
+	yay -S --noconfirm stow neovim man bat xdg-user-dirs firefox discord telegram-desktop thunar tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpv sxiv tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip zathura-pdf-mupdf  
 	
 }
 
 sec_app() {
 
 	echo -e "\n[*] Installing Security Testing Applications "
-	yay -S --noconfirm python python3 python-pip gdb radare2 ida-free burpsuite ghidra ghex nmap metasploit
-	pip3 install pwntools
+	yay -S --noconfirm python python3 python-pip gdb radare2 ida-free burpsuite ghidra ghex nmap metasploit pwndbg-git
+	pip3 install pwntools tabulate 
 }
 
 install_dots() {
@@ -144,9 +147,10 @@ sec_app
 
 zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
 
-chsh
+sudo chsh -s /bin/zsh
 install_dots
 
-mkdir ~/code ~/ctf ~/imp 
+mkdir ~/code ~/ctf ~/imp ~/wall 
+wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
 echo "Everything is Done , Now Reboot"
 exit
