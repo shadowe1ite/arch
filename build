@@ -62,6 +62,8 @@ mkdir /boot/efi
 mount $efipartition /boot/efi
 lsblk
 grub-install --target=x86_64-efi --bootloader-id=GRUB --recheck 
+sed -i 's/#GRUB_DISABLE_OS_PROBER=false/GRUB_DISABLE_OS_PROBER=false/g' /etc/default/grub 
+sed -i 's/GRUB_TIMEOUT=5/GRUB_TIMEOUT=0/g' /etc/default/grub
 grub-mkconfig -o /boot/grub/grub.cfg
 systemctl enable NetworkManager.service
 systemctl enable dhcpcd.service
@@ -88,7 +90,8 @@ printf '\033c'
 cd $HOME
 git_cfg() {
 
-	echo -e "\n[!] Setting Up Git config " 
+	printf '\033c'
+	echo "[!] Setting Up Git config " 
 	git config --global user.email "alansedp@gmail.com"
 	git config --global user.name "shadowelite"
 	git config --global credential.helper store
@@ -97,8 +100,8 @@ git_cfg() {
 
 yay_install() {
 
-	clear
-	echo -e "[*] Installing AUR helper "
+	printf '\033c'
+	echo "[*] Installing AUR helper "
 	sudo pacman -S --needed git base-devel 
 	git clone https://aur.archlinux.org/yay.git
 	cd yay
@@ -107,30 +110,33 @@ yay_install() {
 }
 
 hyprland_setup() {
-	
-	echo -e "\n[*] Installing Hyprland Essenstial pkgs "
+
+	printf '\033c'
+	echo "[*] Installing Hyprland Essenstial pkgs "
 	yay -S --noconfirm hyprland-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git dunst nwg-look-bin nwg-panel nwg-dock-hyprland-bin nwg-drawer-bin rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal jq zsh nodejs npm wl-clipboard wl-clip-persist-git cliphist-bin
 
-	sudo pacman -Rnsdd --noconfirm xdg-desktop-portal-kde xdg-desktop-portal-gnome 
 }
 
 user_apps() {
 
-	echo -e "\n[*] Installing User Applications and Utils "
+	printf '\033c'
+	echo "[*] Installing User Applications and Utils "
 	yay -S --noconfirm stow neovim man bat xdg-user-dirs firefox discord telegram-desktop thunar tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpv sxiv tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip zathura-pdf-mupdf  
 	
 }
 
 sec_app() {
 
-	echo -e "\n[*] Installing Security Testing Applications "
+	printf '\033c'
+	echo "[*] Installing Security Testing Applications "
 	yay -S --noconfirm python python3 python-pip gdb radare2 ida-free burpsuite ghidra ghex nmap metasploit pwndbg-git
 	pip3 install pwntools tabulate 
 }
 
 install_dots() {
 
-	echo -e "\n[*] Installing Dotfiles "
+	printf '\033c'
+	echo "[*] Installing Dotfiles "
 	rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
 	mkdir ~/.config
 	git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
@@ -139,18 +145,37 @@ install_dots() {
 	cd
 }
 
+install_nvidia(){
+
+	printf '\033c'
+	echo "[!] Installing nvidia "
+	yay -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver-git qt5ct qt5-wayland  
+	sudo sed -i 's/quiet/quiet nvidia_drm.modeset=1/g' /etc/default/grub
+	sudo sed -i 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
+	echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia.conf
+	echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist.conf
+	sudo grub-mkconfig -o /boot/grub/grub.cfg
+	sudo mkinitcpio --config /etc/mkinitcpio.conf --generate /boot/initramfs-custom.img
+}
+
+# enable Fn 
 yay_install 
 git_cfg 
 hyprland_setup 
+#install_nvidia
 user_apps 
 sec_app 
 
+# zap install 
 zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
 
-sudo chsh -s /bin/zsh
 install_dots
 
 mkdir ~/code ~/ctf ~/imp ~/wall 
 wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
+pacman -Rnsdd -noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+
+# change shell 
+chsh -s /bin/zsh
 echo "Everything is Done , Now Reboot"
 exit
