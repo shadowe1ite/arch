@@ -173,7 +173,7 @@ install_dots
 
 mkdir ~/code ~/ctf ~/imp ~/wall 
 wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
-pacman -Rnsdd -noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+sudo pacman -Rnsdd -noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
 
 # change shell 
 chsh -s /bin/zsh
