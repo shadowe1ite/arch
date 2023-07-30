@@ -46,6 +46,7 @@ echo "en_US.UTF-8 UTF-8" >> /etc/locale.gen
 locale-gen 
 echo "LANG=en_US.UTF-8" > /etc/locale.conf
 echo "KEYMAP=us" > /etc/vconsole.conf
+printf '\033c'
 echo -ne "Hostname: "
 read hostname
 echo $hostname > /etc/hostname
@@ -54,7 +55,7 @@ echo "::1             localhost" >> /etc/hosts
 echo "127.0.1.1       $hostname.localdomain $hostname" >> /etc/hosts
 mkinitcpio -P
 passwd
-pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools networkmanager network-manager-applet blueman wireless_tools wpa_supplicant dialog ntfs-3g base-devel dhcpcd pulseaudio pulseaudio-bluetooth dash bluez-tools bluez-utils neovim git
+pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools networkmanager network-manager-applet blueman wireless_tools wpa_supplicant dialog ntfs-3g base-devel dhcpcd pulseaudio pulseaudio-bluetooth dash bluez-tools bluez-utils python-neovim neovim alsa-utils git
 fdisk -l
 echo -ne "Enter EFI partition: " 
 read -e efipartition
@@ -71,6 +72,7 @@ systemctl enable bluetooth.service
 rm /bin/sh
 ln -s dash /bin/sh
 echo "%wheel ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
+printf '\033c'
 echo -ne "Enter Username: "
 read username
 useradd -m $username
@@ -113,24 +115,21 @@ hyprland_setup() {
 
 	printf '\033c'
 	echo "[*] Installing Hyprland Essenstial pkgs "
-	yay -S --noconfirm hyprland-nvidia-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git mako rofi-lbonn-wayland-git rofi-emoji ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh nodejs npm wl-clipboard wl-clip-persist-git cliphist-bin network-manager-applet
-
+	yay -S --noconfirm hyprland-nvidia-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git mako rofi-lbonn-wayland-git rofi-emoji ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh nodejs npm wl-clipboard wl-clip-persist-git cliphist-bin network-manager-applet nwg-look-bin cpio swayidle swaylock 
 }
 
 user_apps() {
 
 	printf '\033c'
 	echo "[*] Installing User Applications and Utils "
-	yay -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox discord telegram-desktop nemo tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum 
-	
+	yay -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin pywal-discord-git 	
 }
 
 sec_app() {
 
 	printf '\033c'
 	echo "[*] Installing Security Testing Applications "
-	yay -S --noconfirm python python3 python-pip gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git
-	pip3 install pwntools tabulate 
+	yay -S --noconfirm gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git python-pwntools python-tabulate
 }
 
 install_dots() {
@@ -144,13 +143,14 @@ install_dots() {
 	stow */
 	cd
 	systemctl --user enable mpd.service
+	pywalfox install
 }
 
 install_nvidia(){
 
 	printf '\033c'
 	echo "[!] Installing nvidia "
-	yay -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver-git qt5ct qt5-wayland  
+	yay -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver-git qt5ct qt5-wayland nvidia-prime  
 	sudo sed -i 's/quiet/quiet nvidia_drm.modeset=1/g' /etc/default/grub
 	sudo sed -i 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
 	echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia.conf
@@ -169,14 +169,16 @@ sec_app
 
 # zap install 
 zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
-#
-#install_dots
+install_dots
 
 mkdir ~/code ~/ctf ~/screenshot ~/wall 
 wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
-sudo pacman -Rnsdd -noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+sudo pacman -Rnsdd --noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
 
 # change shell 
 chsh -s /bin/zsh
+rm -rf ~/yay
+sudo rm /install.sh
+rm ~/hypr_install.sh
 echo "Everything is Done , Now Reboot"
 exit
