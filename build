@@ -126,7 +126,7 @@ user_apps() {
 
 	printf '\033c'
 	echo "[*] Installing User Applications and Utils "
-	yay -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git
+	yay -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git linux-wifi-hotspot
 
 	mkdir -p ~/.local/share/themes
 	git clone https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
@@ -175,6 +175,12 @@ install_nvidia(){
 	sudo mkinitcpio --config /etc/mkinitcpio.conf --generate /boot/initramfs-custom.img
 }
 
+penguinf() {
+	git clone https://github.com/p3nguin-kun/penguinFox
+	cd penguinFox
+	./penguinfox-installer.sh
+}
+
 # enable Fn 
 yay_install 
 git_cfg 
@@ -183,6 +189,7 @@ install_nvidia
 user_apps 
 #sec_app 
 service_st
+penguinf
 
 # zap install 
 zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
