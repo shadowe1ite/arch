@@ -26,6 +26,10 @@ mkswap $spartition
 swapon $spartition
 lsblk 
 mount $partition /mnt
+mkdir -p /mnt/media/storage
+echo -ne "\nEnter the second partition: "
+read -e partition2
+mount $partition2 /mnt/media/storage
 lsblk 
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 ls /etc/pacman.d/
