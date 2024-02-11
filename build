@@ -122,7 +122,7 @@ hyprland_setup() {
 
 	printf '\033c'
 	echo "[*] Installing Hyprland Essenstial pkgs "
-	yay -S --noconfirm hyprland-git waybar-hyprland-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git xwaylandvideobridge-cursor-mode-2-git grim slurp swappy-git mako rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist-bin network-manager-applet nwg-look-bin nwg-dock-hyprland-bin nwg-displays nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout safeeyes
+	yay -S --noconfirm hyprland-git waybar-hyprland-cava-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git mako rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-look-bin nwg-dock-hyprland-bin nwg-displays nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout safeeyes
 	yay -Rnsdd --noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
 }
 
