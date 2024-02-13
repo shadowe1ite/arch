@@ -107,14 +107,11 @@ git_cfg() {
 	git config --global core.editor nvim
 }
 
-yay_install() {
-
-	printf '\033c'
-	echo "[*] Installing AUR helper "
-	sudo pacman -S --needed git base-devel 
-	git clone https://aur.archlinux.org/yay.git
-	cd yay
-	makepkg -sifr
+pikaur_install() {
+	sudo pacman -S --needed base-devel git
+	git clone https://aur.archlinux.org/pikaur.git
+	cd pikaur
+	makepkg -fsri --noconfirm
 
 }
 
@@ -122,15 +119,15 @@ hyprland_setup() {
 
 	printf '\033c'
 	echo "[*] Installing Hyprland Essenstial pkgs "
-	yay -S --noconfirm hyprland-git waybar-hyprland-cava-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git mako rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-look-bin nwg-dock-hyprland-bin nwg-displays nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout safeeyes
-	yay -Rnsdd --noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+	pikaur -S --noconfirm hyprland-git waybar-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git mako rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout-git grub-theme-cyberre 
+	pikaur -Rnsdd --noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
 }
 
 user_apps() {
 
 	printf '\033c'
 	echo "[*] Installing User Applications and Utils "
-	yay -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler tumbler-plugins-extra ffmpegthumbnailer gvfs gvfs-mtp colloid-gtk-theme-git colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg bluetoothctl net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git linux-wifi-hotspot
+	pikaur -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler ffmpegthumbnailer gvfs gvfs-mtp colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git linux-wifi-hotspot
 
 	mkdir -p ~/.local/share/themes
 	git clone https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
@@ -140,7 +137,7 @@ sec_app() {
 
 	printf '\033c'
 	echo "[*] Installing Security Testing Applications " 
-	yay -S --noconfirm gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git python-pwntools python-tabulate python-pycryptodome wireshark-qt python-pycryptodome edb-debugger
+	pikaur -S --noconfirm gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git python-pwntools python-tabulate python-pycryptodome wireshark-qt python-pycryptodome edb-debugger
 
 }
 
@@ -168,9 +165,10 @@ install_nvidia(){
 
 	printf '\033c'
 	echo "[!] Installing nvidia and Plymouth"
-	yay -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver-git qt5ct qt5-wayland nvidia-prime
+	pikaur -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver-git qt5ct qt5-wayland nvidia-prime
 	sudo plymouth-set-default-theme optimus
 	sudo sed -i 's/quiet/splash quiet nvidia_drm.modeset=1/g' /etc/default/grub
+	sudo sed -i 's/#GRUB_THEME=.*/GRUB_THEME=\"\/usr\/share\/grub\/themes\/CyberRe\/theme.txt\"/g' /etc/default/grub
 	sudo sed -i 's/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect modconf kms plymouth keyboard keymap consolefont block filesystems fsck)/g' /etc/mkinitcpio.conf
 	sudo sed -i 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
 	echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia.conf
@@ -186,7 +184,7 @@ penguinf() {
 }
 
 # enable Fn 
-yay_install 
+pikaur_install 
 git_cfg 
 hyprland_setup 
 install_nvidia
@@ -206,6 +204,9 @@ wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
 # change shell 
 chsh -s /bin/zsh
 
+# ownership
+sudo chown shadow:shadow /media/storage 
+
 # bat limiter
 wget https://raw.githubusercontent.com/shadowelite-sec/scripts/main/limitd
 chmod +x limitd
@@ -213,7 +214,7 @@ chmod +x limitd
 
 # clean
 rm ~/limitd
-rm -rf ~/yay
+rm -rf ~/pikaur
 sudo rm /install.sh
 rm ~/hypr_install.sh
 echo "Everything is Done , Now Reboot"
