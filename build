@@ -119,8 +119,25 @@ hyprland_setup() {
 
 	printf '\033c'
 	echo "[*] Installing Hyprland Essenstial pkgs "
-	pikaur -S --noconfirm hyprland-git waybar-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git swaync rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout-git grub-theme-cyberre pyprland 
-	pikaur -Rnsdd --noconfirm xdg-desktop-portal xdg-desktop-portal-gnome xdg-desktop-portal-gtk
+	pikaur -Sy --noconfirm hyprland-git waybar-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git swaync rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout-git grub-theme-cyberre pyprland 
+
+	# install libinput-gestures
+	pikaur -S libinput-gestures
+	sudo gpasswd -a $USER input
+
+	# setup pipwire and wireplumber
+	pikaur -S pipewire wireplumber
+	systemctl --user enable pipewire.service wireplumber.service
+
+
+	# install plugins
+	hyprpm update
+	hyprpm add https://github.com/hyprwm/hyprland-plugins.git
+	hyprpm add https://github.com/KZDKM/Hyprspace.git
+
+	# remove other xdg-portals
+	pikaur -Rnsdd --noconfirm xdg-desktop-portal-gnome 
+	pikaur -Rnsdd --noconfirm xdg-desktop-portal-gtk
 }
 
 user_apps() {
@@ -137,7 +154,7 @@ sec_app() {
 
 	printf '\033c'
 	echo "[*] Installing Security Testing Applications " 
-	pikaur -S --noconfirm gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git python-pwntools python-tabulate python-pycryptodome wireshark-qt python-pycryptodome edb-debugger
+	pikaur -Sy --noconfirm gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git python-pwntools python-tabulate python-pycryptodome wireshark-qt python-pycryptodome edb-debugger ffuf-bin sqlmap theharvester-git bind
 
 }
 
