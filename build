@@ -26,10 +26,13 @@ mkswap $spartition
 swapon $spartition
 lsblk 
 mount $partition /mnt
-mkdir -p /mnt/media/storage
-echo -ne "\nEnter the second partition: "
-read -e partition2
-mount $partition2 /mnt/media/storage
+read -p "Do you want to mount second partition? [y/n]" answer
+if [[ $answer = y ]] ; then
+	mkdir -p /mnt/media/storage
+	echo -ne "\nEnter the second partition: "
+	read -e partition2
+	mount $partition2 /mnt/media/storage
+fi
 lsblk 
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
 ls /etc/pacman.d/
@@ -119,14 +122,15 @@ hyprland_setup() {
 
 	printf '\033c'
 	echo "[*] Installing Hyprland Essenstial pkgs "
-	pikaur -Sy --noconfirm hyprland-git waybar-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git swaync rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout-git grub-theme-cyberre pyprland 
+	pikaur -Sy --noconfirm
+	pikaur -S --noconfirm hyprland-git waybar-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git swaync rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-hello wlr-randr-git cpio swayidle plymouth plymouth-theme-optimus-git wlogout-git grub-theme-cyberre pyprland 
 
 	# install libinput-gestures
-	pikaur -S libinput-gestures
+	pikaur -S --noconfirm libinput-gestures
 	sudo gpasswd -a $USER input
 
 	# setup pipwire and wireplumber
-	pikaur -S pipewire wireplumber
+	pikaur -S --noconfirm pipewire wireplumber
 	systemctl --user enable pipewire.service wireplumber.service
 
 
@@ -144,7 +148,7 @@ user_apps() {
 
 	printf '\033c'
 	echo "[*] Installing User Applications and Utils "
-	pikaur -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler ffmpegthumbnailer gvfs gvfs-mtp colloid-icon-theme-git mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git linux-wifi-hotspot
+	pikaur -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler ffmpegthumbnailer gvfs gvfs-mtp mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git linux-wifi-hotspot
 
 	mkdir -p ~/.local/share/themes
 	git clone https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
