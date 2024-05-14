@@ -100,8 +100,6 @@ exit
 #!/bin/bash
 printf '\033c'
 cd $HOME
-#!/bin/bash
-
 rm ./installation.log
 
 install() {
