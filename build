@@ -100,145 +100,324 @@ exit
 #!/bin/bash
 printf '\033c'
 cd $HOME
-git_cfg() {
+#!/bin/bash
 
-	printf '\033c'
-	echo "[!] Setting Up Git config " 
-	git config --global user.email "alansedp@gmail.com"
-	git config --global user.name "shadowelite"
-	git config --global credential.helper store
-	git config --global core.editor nvim
-}
+rm ./installation.log
 
-pikaur_install() {
-	sudo pacman -S --needed base-devel git
-	git clone https://aur.archlinux.org/pikaur.git
-	cd pikaur
-	makepkg -fsri --noconfirm
-
-}
-
-hyprland_setup() {
-
-	printf '\033c'
-	echo "[*] Installing Hyprland Essenstial pkgs "
-	pikaur -Sy --noconfirm
-	pikaur -S --noconfirm meson cmake hyprwayland-scanner-git hyprland-git hypridle-git hyprlock-git waybar-git hyprpicker-git foot-git swww-git qt5-wayland qt6-wayland polkit-kde-agent xdg-desktop-portal-hyprland-git grim slurp swappy-git swaync rofi-lbonn-wayland-git ttf-jetbrains-mono-nerd brightnessctl libpulse python-pywal wal-telegram-git jq zsh starship nodejs npm wl-clipboard wl-clip-persist-git cliphist network-manager-applet nwg-hello wlr-randr-git cpio plymouth plymouth-theme-optimus-git wlogout-git grub-theme-cyberre pyprland 
-
-	# install libinput-gestures
-	pikaur -S --noconfirm libinput-gestures
-	sudo gpasswd -a $USER input
-
-	# setup pipwire and wireplumber
-	pikaur -S --noconfirm pipewire wireplumber
-	systemctl --user enable pipewire.service wireplumber.service
-
-
-	# install plugins
-	hyprpm update
-	hyprpm add https://github.com/hyprwm/hyprland-plugins.git
-	hyprpm add https://github.com/KZDKM/Hyprspace.git
-
-	# remove other xdg-portals
-	pikaur -Rnsdd --noconfirm xdg-desktop-portal-gnome 
-	pikaur -Rnsdd --noconfirm xdg-desktop-portal-gtk
-}
-
-user_apps() {
-
-	printf '\033c'
-	echo "[*] Installing User Applications and Utils "
-	pikaur -S --noconfirm stow neovim man man-pages bat xdg-user-dirs firefox-bin python python3 python-pip python-pipx python-pywalfox discord telegram-desktop nemo nemo-fileroller tumbler ffmpegthumbnailer gvfs gvfs-mtp mpc mpd mpv sxiv ncmpcpp tauon-music-box obs-studio wlrobs-hg net-tools wireless_tools wget unzip zip tar p7zip grc zathura-pdf-mupdf binder_linux-dkms ranger-git libsixel thefuck glow gum code-minimap-bin cava-git pamixer piper noto-fonts-emoji vimb betterdiscord-installer-bin auto-cpufreq thermald pywal-discord-git visual-studio-code-bin mpv-thumbfast-git linux-wifi-hotspot
-
-	mkdir -p ~/.local/share/themes
-	git clone https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
-}
-
-sec_app() {
-
-	printf '\033c'
-	echo "[*] Installing Security Testing Applications " 
-	pikaur -Sy --noconfirm gdb radare2 ida-free burpsuite ghidra ghex nmap netcat metasploit pwndbg-git python-pwntools python-tabulate python-pycryptodome wireshark-qt python-pycryptodome edb-debugger ffuf-bin sqlmap theharvester-git bind
-
+install() {
+    for pkg in "$@"; do
+        sudo pikaur -S --noconfirm "$pkg"
+        if [ $? -ne 0 ]; then
+            echo "$pkg" >> installation.log
+        fi
+    done
 }
 
 service_st(){
-	sudo modprobe snd_aloop
-	sudo systemctl enable auto-cpufreq
-	sudo systemctl enable thermald
+    sudo gpasswd -a $USER input
+    sudo modprobe snd_aloop
+    sudo systemctl enable auto-cpufreq
+    sudo systemctl enable thermald
+    systemctl --user enable pipewire.service wireplumber.service
+    systemctl --user enable mpd.service
+}
+
+storage(){
+    sudo chown shadow:shadow /media/storage 
+    ln -s /media/storage/Movies ~/Videos/Movies 
+    ln -s /media/storage/courses ~/Videos/courses
+}
+
+git_cfg() {
+
+    printf '\033c'
+    echo "[!] Setting Up Git config " 
+    git config --global user.email "alansedp@gmail.com"
+    git config --global user.name "shadowelite"
+    git config --global credential.helper store
+    git config --global core.editor nvim
+}
+
+pikaur_install() {
+    sudo pacman -S --needed base-devel git
+    git clone https://aur.archlinux.org/pikaur.git
+    cd pikaur
+    makepkg -fsri --noconfirm
+
 }
 
 install_dots() {
 
-	printf '\033c'
-	echo "[*] Installing Dotfiles "
-	rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
-	mkdir ~/.config
-	git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
-	cd ~/.dot
-	stow */
-	cd
-	systemctl --user enable mpd.service
-	pywalfox install
+    printf '\033c'
+    echo "[*] Installing Dotfiles "
+    rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
+    mkdir ~/.config
+    git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
+    cd ~/.dot
+    stow */
+    cd
+    mkdir ~/code ~/ctf ~/screenshot ~/wall 
+    wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
+    mkdir -p ~/.local/share/themes
+    git clone --depth=1 https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
+    pip install --break-system-packages --index-url https://test.pypi.org/simple/ pywalfox==2.8.0rc1
+    pywalfox install #--browser librewolf
+    git clone https://github.com/p3nguin-kun/penguinFox
+    cd penguinFox
+    ./penguinfox-installer.sh < ~/.mozilla/firefox/*.default-release
+    # zap install 
+    zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
+    # change shell 
+    chsh -s /bin/zsh
+    wget https://raw.githubusercontent.com/shadowelite-sec/scripts/main/limitd
+    chmod +x limitd
+    ./limitd 80
+
 }
 
-install_nvidia(){
+nvidia_plymouth(){
 
-	printf '\033c'
-	echo "[!] Installing nvidia and Plymouth"
-	pikaur -S --noconfirm nvidia-dkms nvidia-utils libva libva-nvidia-driver-git qt5ct qt5-wayland nvidia-prime
-	sudo plymouth-set-default-theme optimus
-	sudo sed -i 's/quiet/splash quiet nvidia_drm.modeset=1/g' /etc/default/grub
-	sudo sed -i 's/#GRUB_THEME=.*/GRUB_THEME=\"\/usr\/share\/grub\/themes\/CyberRe\/theme.txt\"/g' /etc/default/grub
-	sudo sed -i 's/.*GRUB_DEFAULT=saved.*/GRUB_DEFAULT=saved/g' /etc/default/grub
-	sudo sed -i 's/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/g' /etc/default/grub
-	sudo sed -i 's/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect modconf kms plymouth keyboard keymap consolefont block filesystems fsck)/g' /etc/mkinitcpio.conf
-	sudo sed -i 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
-	echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia.conf
-	echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist.conf
-	sudo grub-mkconfig -o /boot/grub/grub.cfg
-	sudo mkinitcpio --config /etc/mkinitcpio.conf --generate /boot/initramfs-custom.img
+    printf '\033c'
+    echo "[!] Installing nvidia and Plymouth"
+    sudo plymouth-set-default-theme optimus
+    sudo sed -i 's/quiet/splash quiet nvidia_drm.modeset=1/g' /etc/default/grub
+    sudo sed -i 's/#GRUB_THEME=.*/GRUB_THEME=\"\/usr\/share\/grub\/themes\/CyberRe\/theme.txt\"/g' /etc/default/grub
+    sudo sed -i 's/.*GRUB_DEFAULT=saved.*/GRUB_DEFAULT=saved/g' /etc/default/grub
+    sudo sed -i 's/#GRUB_SAVEDEFAULT=true/GRUB_SAVEDEFAULT=true/g' /etc/default/grub
+    sudo sed -i 's/HOOKS=(base udev autodetect modconf kms keyboard keymap consolefont block filesystems fsck)/HOOKS=(base udev autodetect modconf kms plymouth keyboard keymap consolefont block filesystems fsck)/g' /etc/mkinitcpio.conf
+    sudo sed -i 's/MODULES=()/MODULES=(nvidia nvidia_modeset nvidia_uvm nvidia_drm)/g' /etc/mkinitcpio.conf
+    echo "options nvidia-drm modeset=1" | sudo tee /etc/modprobe.d/nvidia.conf
+    echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist.conf
+    sudo grub-mkconfig -o /boot/grub/grub.cfg
+    sudo mkinitcpio --config /etc/mkinitcpio.conf --generate /boot/initramfs-custom.img
 }
 
-penguinf() {
-	git clone https://github.com/p3nguin-kun/penguinFox
-	cd penguinFox
-	./penguinfox-installer.sh
-}
+hypr_pkgs=(
+    
+    # requirements
+    meson 
+    cmake 
+    brightnessctl 
+    libpulse 
+    nodejs 
+    npm 
+    wlr-randr-git 
+    cpio 
 
-# enable Fn 
+    # dots manager and file
+    stow
+    xdg-user-dirs 
+    
+    # hyprland core
+    hyprlang-git 
+    hyprwayland-scanner-git 
+    hyprland-git 
+    xdg-desktop-portal-hyprland-git 
+    hypridle-git 
+    hyprlock-git 
+    hyprpicker-git 
+    pipewire
+    wireplumber
+    waybar-git 
+    foot-git 
+    swww-git 
+    wlogout-git 
+    pyprland
+    libinput-gestures
+    swaync
+    rofi-lbonn-wayland-git 
+
+    # waybar font
+    ttf-jetbrains-mono-nerd
+    
+    # clipboard
+    wl-clipboard 
+    wl-clip-persist-git 
+    cliphist 
+
+    # qt
+    qt5-wayland 
+    qt6-wayland
+    qt5ct  
+    
+    polkit-kde-agent 
+    
+    # screen shot 
+    grim 
+    slurp 
+    swappy-git 
+
+    # pywal
+    python-pywal 
+    wal-telegram-git 
+    
+    # shell
+    jq 
+    zsh 
+    starship 
+    
+    network-manager-applet 
+    
+    # grub and splash
+    plymouth 
+    plymouth-theme-optimus-git 
+    grub-theme-cyberre 
+    # Add more packages here...
+)
+
+
+sec_pkgs=(
+    
+    # reverse
+    gdb
+    radare2
+    ghidra 
+    ida-free 
+    ghex
+    pwndbg-git
+    python-pwntools 
+    python-tabulate 
+    python-pycryptodome 
+    edb-debugger
+
+    # network
+    nmap
+    netcat
+    wireshark-qt 
+    bind
+
+    # exploitation
+    metasploit 
+    
+    # web 
+    burpsuite 
+    ffuf-bin 
+    sqlmap 
+    theharvester-git 
+    # Add more packages here...
+)
+
+user_pkgs=(
+    man 
+    man-pages 
+    
+    # browsers
+    vimb 
+    firefox-bin
+
+    python 
+    python3 
+    python-pip 
+    python-pipx 
+    
+    # social
+    #discord 
+    telegram-desktop 
+    vesktop-bin
+
+    # media
+    nemo 
+    nemo-fileroller 
+    tumbler 
+    ffmpegthumbnailer 
+    gvfs 
+    gvfs-mtp 
+    mpv 
+    mpv-thumbfast-git 
+    sxiv
+
+    # screen record
+    obs-studio 
+    wlrobs-hg 
+    net-tools 
+    wireless_tools 
+    
+    # basic utils
+    wget 
+    unzip 
+    zip 
+    tar
+    bat 
+    unrar
+    p7zip 
+    grc 
+    zathura-pdf-mupdf 
+    ranger-git 
+    
+    # shell
+    libsixel 
+    thefuck 
+    glow 
+    gum
+
+    # mouse and keybord rgb
+    piper 
+    openrgb
+
+    noto-fonts-emoji 
+    betterdiscord-installer-bin 
+    
+    # termal manager
+    auto-cpufreq 
+    thermald
+
+    # code
+    visual-studio-code-bin 
+    neovim 
+    
+    # network
+    linux-wifi-hotspot 
+
+    # hyprvizer
+    binder_linux-dkms 
+    
+    # spotify and music
+    spotify-adblock-git
+    sptlrx-bin 
+    nwg-look-bin
+    tauon-music-box 
+    mpc 
+    mpd 
+    ncmpcpp 
+    cava-git 
+    pamixer 
+    # Add more packages here...
+)
+
+nvidia_pkgs=(
+    nvidia-dkms 
+    nvidia-utils 
+    libva 
+    libva-nvidia-driver-git 
+    nvidia-prime
+)
+
 pikaur_install 
+echo "Installing Hyprland Essential packages"
+install "${hypr_pkgs[@]}"
+
+echo "Installing User Applications and Utils"
+install "${user_pkgs[@]}"
+
+echo "Installing Security Testing Applications"
+install "${sec_pkgs[@]}"
+
+echo "Installing Nvidia Pkgs"
+install "${nvidia_pkgs[@]}"
+
+echo "configring nvidia and plymouth"
+nvidia_plymouth
+
 git_cfg 
-hyprland_setup 
-install_nvidia
-user_apps 
-#sec_app 
 service_st
-penguinf
-
-# zap install 
-zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
 install_dots
+storage
 
-mkdir ~/code ~/ctf ~/screenshot ~/wall 
-wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
-
-
-# change shell 
-chsh -s /bin/zsh
-
-# ownership
-sudo chown shadow:shadow /media/storage 
-
-# bat limiter
-wget https://raw.githubusercontent.com/shadowelite-sec/scripts/main/limitd
-chmod +x limitd
-./limitd 80
 
 # clean
 rm ~/limitd
 rm -rf ~/pikaur
 sudo rm /install.sh
 rm ~/hypr_install.sh
+echo "Installation complete."
 echo "Everything is Done , Now Reboot"
-exit
