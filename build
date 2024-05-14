@@ -148,11 +148,11 @@ install_dots() {
 
     printf '\033c'
     echo "[*] Installing Dotfiles "
-    rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
-    mkdir ~/.config
+    # rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
+    [ ! -f ~/.config/myfile.txt ] && mkdir -p ~/.config
     git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
     cd ~/.dot
-    stow */
+    stow --adopt */
 }
 home_ctl(){
     cd
