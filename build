@@ -331,7 +331,9 @@ user_pkgs=(
 
     # screen record
     obs-studio 
-    wlrobs-hg 
+    #wlrobs-hg
+
+    # network
     net-tools 
     wireless_tools 
     
@@ -344,8 +346,9 @@ user_pkgs=(
     unrar
     p7zip 
     grc 
-    zathura-pdf-mupdf 
-    ranger-git 
+    zathura-pdf-mupdf
+    lf
+    #ranger-git 
     
     # shell
     libsixel 
@@ -358,7 +361,7 @@ user_pkgs=(
     openrgb
 
     noto-fonts-emoji 
-    betterdiscord-installer-bin 
+    #betterdiscord-installer-bin 
     
     # termal manager
     auto-cpufreq 
