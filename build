@@ -104,7 +104,7 @@ rm ./installation.log
 
 install() {
     for pkg in "$@"; do
-        sudo pikaur -S --noconfirm "$pkg"
+        sudo yay -S --noconfirm "$pkg"
         if [ $? -ne 0 ]; then
             echo "$pkg" >> installation.log
         fi
@@ -136,11 +136,11 @@ git_cfg() {
     git config --global core.editor nvim
 }
 
-pikaur_install() {
-    sudo pacman -S --needed base-devel git
-    git clone https://aur.archlinux.org/pikaur.git
-    cd pikaur
-    makepkg -fsri --noconfirm
+aur_install() {
+    sudo pacman -S --needed git base-devel 
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -sifr --noconfirm
 
 }
 
@@ -390,7 +390,7 @@ nvidia_pkgs=(
     nvidia-prime
 )
 
-pikaur_install 
+aur_install 
 echo "Installing Hyprland Essential packages"
 install "${hypr_pkgs[@]}"
 
