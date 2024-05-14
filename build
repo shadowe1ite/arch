@@ -204,6 +204,14 @@ hypr_pkgs=(
     wlr-randr-git 
     cpio 
 
+    # python dependencies 
+    python 
+    python3 
+    python-pip 
+    python-pipx
+    python-packaging
+    
+
     # dots manager and file
     stow
     xdg-user-dirs 
@@ -305,11 +313,6 @@ user_pkgs=(
     vimb 
     firefox-bin
 
-    python 
-    python3 
-    python-pip 
-    python-pipx 
-    
     # social
     #discord 
     telegram-desktop 
