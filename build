@@ -158,6 +158,7 @@ home_ctl(){
     cd
     mkdir ~/code ~/ctf ~/screenshot ~/wall 
     wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
+    ~/.config/hypr/scripts/wall -w ~/wall/1.png
     mkdir -p ~/.local/share/themes
     git clone --depth=1 https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
     git clone --depth=1 https://github.com/vinceliuice/Colloid-icon-theme.git /tmp/icons
@@ -222,7 +223,8 @@ hypr_pkgs=(
     # hyprland core
     hyprlang-git 
     hyprwayland-scanner-git 
-    hyprland-git 
+    #hyprland-git 
+    hyprland 
     xdg-desktop-portal-hyprland-git 
     hypridle-git 
     hyprlock-git 
