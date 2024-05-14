@@ -104,7 +104,7 @@ rm ./installation.log
 
 install() {
     for pkg in "$@"; do
-        sudo yay -S --noconfirm "$pkg"
+        yay -S --noconfirm "$pkg"
         if [ $? -ne 0 ]; then
             echo "$pkg" >> installation.log
         fi
@@ -153,6 +153,8 @@ install_dots() {
     git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
     cd ~/.dot
     stow */
+}
+home_ctl(){
     cd
     mkdir ~/code ~/ctf ~/screenshot ~/wall 
     wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
@@ -164,13 +166,13 @@ install_dots() {
     cd penguinFox
     ./penguinfox-installer.sh < ~/.mozilla/firefox/*.default-release
     # zap install 
+    cd
     zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
     # change shell 
     chsh -s /bin/zsh
     wget https://raw.githubusercontent.com/shadowelite-sec/scripts/main/limitd
     chmod +x limitd
     ./limitd 80
-
 }
 
 nvidia_plymouth(){
@@ -393,6 +395,7 @@ nvidia_pkgs=(
 aur_install 
 echo "Installing Hyprland Essential packages"
 install "${hypr_pkgs[@]}"
+install_dots
 
 echo "Installing User Applications and Utils"
 install "${user_pkgs[@]}"
@@ -408,9 +411,8 @@ nvidia_plymouth
 
 git_cfg 
 service_st
-install_dots
 storage
-
+home_ctl
 
 # clean
 rm ~/limitd
