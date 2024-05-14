@@ -257,7 +257,8 @@ hypr_pkgs=(
 
     # pywal
     python-pywal 
-    wal-telegram-git 
+    wal-telegram-git
+    sxiv
     
     # shell
     jq 
@@ -327,7 +328,6 @@ user_pkgs=(
     gvfs-mtp 
     mpv 
     mpv-thumbfast-git 
-    sxiv
 
     # screen record
     obs-studio 
@@ -403,13 +403,12 @@ install_dots
 echo "Installing User Applications and Utils"
 install "${user_pkgs[@]}"
 
-echo "Installing Security Testing Applications"
-install "${sec_pkgs[@]}"
+#echo "Installing Security Testing Applications"
+#install "${sec_pkgs[@]}"
 
 echo "Installing Nvidia Pkgs"
 install "${nvidia_pkgs[@]}"
 
-echo "configring nvidia and plymouth"
 nvidia_plymouth
 
 git_cfg 
