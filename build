@@ -65,7 +65,7 @@ echo "::1             localhost" >> /etc/hosts
 echo "127.0.1.1       $hostname.localdomain $hostname" >> /etc/hosts
 mkinitcpio -P
 passwd
-pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools networkmanager network-manager-applet blueman wireless_tools wpa_supplicant dialog ntfs-3g base-devel dhcpcd pulseaudio pulseaudio-bluetooth dash bluez-tools bluez-utils python-neovim neovim alsa-utils git
+pacman --noconfirm -S grub efibootmgr os-prober dosfstools mtools networkmanager network-manager-applet blueman wireless_tools wpa_supplicant dialog ntfs-3g base-devel dhcpcd dash bluez-tools bluez-utils python-neovim neovim git
 fdisk -l
 echo -ne "Enter EFI partition: " 
 read -e efipartition
@@ -116,8 +116,8 @@ service_st(){
     sudo modprobe snd_aloop
     sudo systemctl enable auto-cpufreq
     sudo systemctl enable thermald
-    systemctl --user enable pipewire.service wireplumber.service
-    systemctl --user enable mpd.service
+    systemctl --user enable pipewire.service pipewire-pulse.service wireplumber.service
+    #systemctl --user enable mpd.service
 }
 
 storage(){
@@ -163,7 +163,7 @@ home_ctl(){
     git clone --depth=1 https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
     git clone --depth=1 https://github.com/vinceliuice/Colloid-icon-theme.git /tmp/icons
     cd /tmp/icons 
-    ./install.sh -t all -s default dracula
+    ./install.sh -t all -s all
     pip install --break-system-packages --index-url https://test.pypi.org/simple/ pywalfox==2.8.0rc1
     pywalfox install #--browser librewolf
     git clone https://github.com/p3nguin-kun/penguinFox /tmp/penguinFox
@@ -194,6 +194,29 @@ nvidia_plymouth(){
     echo "blacklist nouveau" | sudo tee /etc/modprobe.d/blacklist.conf
     sudo grub-mkconfig -o /boot/grub/grub.cfg
     sudo mkinitcpio --config /etc/mkinitcpio.conf --generate /boot/initramfs-custom.img
+}
+
+setup_sddm(){
+    echo ' 
+    [General]
+    DefaultSession=hyprland.desktop
+    DisplayServer=x11
+    GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
+    InputMethod=
+    Numlock=none
+    
+    [Theme]
+    Current=where_is_my_sddm_theme
+    
+    [Wayland]
+    CompositorCommand=Hyprland
+    EnableHiDPI=true
+    SessionDir=/usr/share/wayland-sessions' | sudo tee /etc/sddm.conf > /dev/null
+    git clone https://github.com/shadowelite-sec/where-is-my-sddm-theme /tmp/sddm_theme
+    cd /tmp/sddm_theme
+    ./install.sh
+    cd
+    sudo systemctl enable sddm.service
 }
 
 hypr_pkgs=(
@@ -229,7 +252,15 @@ hypr_pkgs=(
     hypridle-git 
     hyprlock-git 
     hyprpicker-git 
-    pipewire
+    
+    # audio
+    pipewire 
+    pipewire-pulse 
+    pipewire-alsa 
+    pipewire-audio 
+    pipewire-jack 
+    pipewire-jack 
+    gst-plugin-pipewire
     wireplumber
     waybar-git 
     foot-git 
@@ -248,13 +279,18 @@ hypr_pkgs=(
     wl-clip-persist-git 
     cliphist 
 
-    # qt
+    # gtk & qt
     qt5-wayland 
     qt6-wayland
     qt5ct  
-    
+    nwg-look-bin
+
+    # polkit agent
     polkit-kde-agent 
-    
+
+    # display manager
+    sddm
+
     # screen shot 
     grim 
     slurp 
@@ -269,7 +305,8 @@ hypr_pkgs=(
     jq 
     zsh 
     starship 
-    
+   
+    # network
     network-manager-applet 
     
     # grub and splash
@@ -334,6 +371,7 @@ user_pkgs=(
     mpv 
     mpv-thumbfast-git
     qbittorrent
+    mugshot
 
     # screen record
     obs-studio 
@@ -351,8 +389,13 @@ user_pkgs=(
     bat 
     unrar
     p7zip 
-    grc 
+    grc
+
+    # document readers
+    zaread
     zathura-pdf-mupdf
+    
+    # file manager
     lf
     #ranger-git 
     
@@ -403,6 +446,16 @@ nvidia_pkgs=(
     nvidia-prime
 )
 
+gameing=(
+    lutris
+    rofi-games
+    steam
+    gamescope
+    gamemode
+    proton-ge-custom-bin
+    protonup-qt
+)
+
 aur_install 
 echo "Installing Hyprland Essential packages"
 install "${hypr_pkgs[@]}"
@@ -421,8 +474,9 @@ nvidia_plymouth
 
 git_cfg 
 service_st
-storage
 home_ctl
+storage
+setup_sddm
 
 # clean
 rm ~/limitd
