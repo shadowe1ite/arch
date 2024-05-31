@@ -121,9 +121,11 @@ service_st(){
 }
 
 storage(){
-    sudo chown shadow:shadow /media/storage 
+    sudo chown shadow:shadow /media/storage
+    [ -d ~/.config/ ] && rm -rf ~/Documents
     ln -s /media/storage/Movies ~/Videos/Movies 
     ln -s /media/storage/courses ~/Videos/courses
+    ln -s /media/storage/Documents ~/Documents
 }
 
 git_cfg() {
@@ -149,7 +151,7 @@ install_dots() {
     printf '\033c'
     echo "[*] Installing Dotfiles "
     # rm -rf ~/.config && rm -r ~/.zshrc ~/.bashrc 
-    [ ! -f ~/.config/myfile.txt ] && mkdir -p ~/.config
+     [ ! -d ~/.config/ ] && mkdir -p ~/.config
     git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
     cd ~/.dot
     stow --adopt */
@@ -394,6 +396,8 @@ user_pkgs=(
     # document readers
     zaread
     zathura-pdf-mupdf
+    sioyek
+    pdfarranger
     
     # file manager
     lf
