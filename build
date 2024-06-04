@@ -398,7 +398,10 @@ user_pkgs=(
     zathura-pdf-mupdf
     sioyek
     pdfarranger
-    
+
+    # LaTeX
+    texlive
+
     # file manager
     lf
     #ranger-git 
