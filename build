@@ -126,6 +126,7 @@ storage(){
     ln -s /media/storage/Movies ~/Videos/Movies 
     ln -s /media/storage/courses ~/Videos/courses
     ln -s /media/storage/Documents ~/Documents
+    ln -s /media/storage/wall/ ~/wall
 }
 
 git_cfg() {
@@ -156,11 +157,11 @@ install_dots() {
     cd ~/.dot
     stow --adopt */
 }
+
 home_ctl(){
     cd
-    mkdir ~/code ~/ctf ~/screenshot ~/wall 
-    wget https://w.wallhaven.cc/full/x8/wallhaven-x8k5zv.png -O ~/wall/1.png
-    ~/.config/hypr/scripts/wall -w ~/wall/1.png
+    mkdir ~/code ~/ctf ~/screenshot 
+    #~/.config/hypr/scripts/wall -w ~/wall/1.png
     mkdir -p ~/.local/share/themes
     git clone --depth=1 https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
     git clone --depth=1 https://github.com/vinceliuice/Colloid-icon-theme.git /tmp/icons
@@ -179,6 +180,18 @@ home_ctl(){
     wget https://raw.githubusercontent.com/shadowelite-sec/scripts/main/limitd
     chmod +x limitd
     ./limitd 80
+}
+
+spotup(){
+	printf '\033c'
+	echo "[!] Installing Spotify related pkgs"
+	yay -S --noconfirm spotify-adblock-git
+	sudo chmod a+wr /opt/spotify 
+	sudo chmod a+wr /opt/spotify/Apps -R
+	yay -S --noconfirm spicetify-themes-git spicetify-cli
+	spicetify config current_theme text
+	spicetify config color_scheme RosePine 
+	spicetify backup apply
 }
 
 nvidia_plymouth(){
@@ -216,7 +229,7 @@ setup_sddm(){
     SessionDir=/usr/share/wayland-sessions' | sudo tee /etc/sddm.conf > /dev/null
     git clone https://github.com/shadowelite-sec/where-is-my-sddm-theme /tmp/sddm_theme
     cd /tmp/sddm_theme
-    ./install.sh
+    sudo ./install.sh
     cd
     sudo systemctl enable sddm.service
 }
@@ -265,9 +278,21 @@ hypr_pkgs=(
     gst-plugin-pipewire
     wireplumber
     waybar-git 
+    
+    # terminal
     foot-git 
-    swww-git 
-    wlogout-git 
+    
+    # wallpaper
+    swww-git
+    waypaper
+
+    # logout
+    wlogout-git
+
+    # font
+    ttf-sourcecodepro-nerd
+
+    # scratchpad
     pyprland
     libinput-gestures
     swaync
@@ -282,9 +307,11 @@ hypr_pkgs=(
     cliphist 
 
     # gtk & qt
+    kvantum 
+    qt5ct
+    qt6ct
     qt5-wayland 
     qt6-wayland
-    qt5ct  
     nwg-look-bin
 
     # polkit agent
@@ -364,10 +391,14 @@ user_pkgs=(
     vesktop-bin
 
     # media
-    nemo 
-    nemo-fileroller 
-    tumbler 
-    ffmpegthumbnailer 
+    #nemo 
+    #nemo-fileroller 
+    #tumbler
+    dolphin
+    qt5-imageformats
+    archlinux-xdg-menu
+    ffmpegthumbs
+    #ffmpegthumbnailer 
     gvfs 
     gvfs-mtp 
     mpv 
@@ -434,12 +465,11 @@ user_pkgs=(
     binder_linux-dkms 
     
     # spotify and music
-    spotify-adblock-git
     sptlrx-bin 
     tauon-music-box 
-    mpc 
-    mpd 
-    ncmpcpp 
+    #mpc 
+    #mpd 
+    #ncmpcpp 
     cava-git 
     pamixer 
     # Add more packages here...
@@ -470,6 +500,8 @@ install_dots
 
 echo "Installing User Applications and Utils"
 install "${user_pkgs[@]}"
+
+spotup
 
 #echo "Installing Security Testing Applications"
 #install "${sec_pkgs[@]}"
