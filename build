@@ -122,7 +122,8 @@ service_st(){
 
 storage(){
     sudo chown shadow:shadow /media/storage
-    [ -d ~/.config/ ] && rm -rf ~/Documents
+    [ -d ~/Documents ] && rm -rf ~/Documents
+    [ -d ~/Videos ] && rm -rf ~/Videos
     ln -s /media/storage/Movies ~/Videos/Movies 
     ln -s /media/storage/courses ~/Videos/courses
     ln -s /media/storage/Documents ~/Documents
@@ -238,14 +239,17 @@ hypr_pkgs=(
     
     # requirements
     meson 
-    cmake 
+    cmake
+    bc
     brightnessctl 
     libpulse 
     nodejs 
     npm 
     wlr-randr-git 
     cpio 
-
+    gtkmm-4.0
+    gtk4-layer-shell
+    
     # python dependencies 
     python 
     python3 
@@ -259,7 +263,8 @@ hypr_pkgs=(
     xdg-user-dirs 
     
     # hyprland core
-    hyprlang-git 
+    hyprutils-git
+    hyprlang-git
     hyprwayland-scanner-git 
     #hyprland-git 
     hyprland 
@@ -285,6 +290,7 @@ hypr_pkgs=(
     # wallpaper
     swww-git
     waypaper
+    wallust-git
 
     # logout
     wlogout-git
@@ -398,6 +404,7 @@ user_pkgs=(
     qt5-imageformats
     archlinux-xdg-menu
     ffmpegthumbs
+    ark
     #ffmpegthumbnailer 
     gvfs 
     gvfs-mtp 
@@ -484,6 +491,7 @@ nvidia_pkgs=(
 )
 
 gameing=(
+    wine
     lutris
     rofi-games
     steam
@@ -516,10 +524,11 @@ service_st
 home_ctl
 storage
 setup_sddm
+XDG_MENU_PREFIX=arch- kbuildsycoca6
 
 # clean
 rm ~/limitd
-rm -rf ~/pikaur
+rm -rf ~/yay
 sudo rm /install.sh
 rm ~/hypr_install.sh
 echo "Installation complete."
