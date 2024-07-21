@@ -123,7 +123,7 @@ service_st(){
 storage(){
     sudo chown shadow:shadow /media/storage
     [ -d ~/Documents ] && rm -rf ~/Documents
-    [ -d ~/Videos ] && rm -rf ~/Videos
+    [ ! -d ~/Videos ] && mkdir ~/Videos
     ln -s /media/storage/Movies ~/Videos/Movies 
     ln -s /media/storage/courses ~/Videos/courses
     ln -s /media/storage/Documents ~/Documents
@@ -288,7 +288,7 @@ hypr_pkgs=(
     foot-git 
     
     # wallpaper
-    swww-git
+    swww
     waypaper
     wallust-git
 
@@ -430,6 +430,7 @@ user_pkgs=(
     unrar
     p7zip 
     grc
+    mlocate 
 
     # document readers
     zaread
@@ -478,7 +479,8 @@ user_pkgs=(
     #mpd 
     #ncmpcpp 
     cava-git 
-    pamixer 
+    pamixer
+    easyeffects
     # Add more packages here...
 )
 
