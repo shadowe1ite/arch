@@ -124,10 +124,11 @@ storage(){
     sudo chown shadow:shadow /media/storage
     [ -d ~/Documents ] && rm -rf ~/Documents
     [ ! -d ~/Videos ] && mkdir ~/Videos
-    ln -s /media/storage/Movies ~/Videos/Movies 
+    ln -s /media/storage/Movies ~/Videos/Movies
     ln -s /media/storage/courses ~/Videos/courses
     ln -s /media/storage/Documents ~/Documents
     ln -s /media/storage/wall/ ~/wall
+    ln -s /media/storage/code/ ~/code
 }
 
 git_cfg() {
