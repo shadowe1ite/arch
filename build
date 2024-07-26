@@ -509,10 +509,10 @@ echo "Installing Hyprland Essential packages"
 install "${hypr_pkgs[@]}"
 install_dots
 
-echo "Installing User Applications and Utils"
-install "${user_pkgs[@]}"
+#echo "Installing User Applications and Utils"
+#install "${user_pkgs[@]}"
 
-spotup
+#spotup
 
 #echo "Installing Security Testing Applications"
 #install "${sec_pkgs[@]}"
