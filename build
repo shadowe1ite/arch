@@ -162,7 +162,7 @@ install_dots() {
 
 home_ctl(){
     cd
-    mkdir ~/code ~/ctf ~/screenshot 
+    mkdir ~/ctf ~/screenshot 
     #~/.config/hypr/scripts/wall -w ~/wall/1.png
     mkdir -p ~/.local/share/themes
     git clone --depth=1 https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
