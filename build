@@ -390,7 +390,7 @@ user_pkgs=(
     
     # browsers
     vimb 
-    firefox-bin
+    firefox-esr-bin
 
     # social
     #discord 
@@ -534,5 +534,6 @@ rm ~/limitd
 rm -rf ~/yay
 sudo rm /install.sh
 rm ~/hypr_install.sh
+mv .zshrc_2024 .zshrc
 echo "Installation complete."
 echo "Everything is Done , Now Reboot"
