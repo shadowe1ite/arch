@@ -1,0 +1,379 @@
+#!/bin/bash
+printf '\033c'
+cd $HOME
+rm ./installation.log
+
+install() {
+    for pkg in "$@"; do
+        yay -S --noconfirm "$pkg"
+        if [ $? -ne 0 ]; then
+            echo "$pkg" >> ~/installation.log
+        fi
+    done
+}
+
+service_st(){
+    sudo gpasswd -a $USER input
+    sudo modprobe snd_aloop
+    sudo systemctl enable auto-cpufreq
+    sudo systemctl enable thermald
+    sudo systemctl enable bluetooth
+    systemctl --user enable pipewire.service pipewire-pulse.service wireplumber.service
+    #systemctl --user enable mpd.service
+}
+
+storage(){
+    sudo chown shadow:shadow /media/storage
+    [ -d ~/Documents ] && rm -rf ~/Documents
+    [ ! -d ~/Videos ] && mkdir ~/Videos
+    ln -s /media/storage/Movies ~/Videos/Movies
+    ln -s /media/storage/courses ~/Videos/courses
+    ln -s /media/storage/Documents ~/Documents
+    ln -s /media/storage/wall/ ~/wall
+    ln -s /media/storage/code/ ~/code
+}
+
+git_cfg() {
+
+    printf '\033c'
+    echo "[!] Setting Up Git config " 
+    git config --global user.email "alansedp@gmail.com"
+    git config --global user.name "shadowelite"
+    git config --global credential.helper store
+    git config --global core.editor nvim
+}
+
+aur_install() {
+    sudo pacman -S --needed git base-devel 
+    git clone https://aur.archlinux.org/yay.git
+    cd yay
+    makepkg -sifr --noconfirm
+
+}
+
+install_dots() {
+
+    printf '\033c'
+    echo "[*] Installing Dotfiles "
+     [ ! -d ~/.config/ ] && mkdir -p ~/.config
+    git clone --depth=1 https://github.com/shadowelite-sec/hypr ~/.dot
+    cd ~/.dot
+    stow --adopt */
+}
+
+home_ctl(){
+    cd
+    mkdir ~/ctf ~/screenshot 
+    mkdir -p ~/.local/share/themes
+    git clone --depth=1 https://github.com/B21q/Corvus.git ~/.local/share/themes/Corvus
+    git clone --depth=1 https://github.com/vinceliuice/Colloid-icon-theme.git /tmp/icons
+    cd /tmp/icons 
+    ./install.sh -t all -s all
+    pip install --break-system-packages --index-url https://test.pypi.org/simple/ pywalfox==2.8.0rc1
+    pywalfox install
+    # zap install 
+    cd
+    zsh <(curl -s https://raw.githubusercontent.com/zap-zsh/zap/master/install.zsh) --branch release-v1
+    # change shell 
+    chsh -s /bin/zsh
+    wget https://raw.githubusercontent.com/shadowelite-sec/scripts/main/limitd
+    chmod +x limitd
+    ./limitd 80
+}
+
+setup_sddm(){
+    echo ' 
+    [General]
+    DefaultSession=hyprland.desktop
+    DisplayServer=x11
+    GreeterEnvironment=QT_WAYLAND_SHELL_INTEGRATION=layer-shell
+    InputMethod=
+    Numlock=none
+    
+    [Theme]
+    Current=where_is_my_sddm_theme
+    
+    [Wayland]
+    CompositorCommand=Hyprland
+    EnableHiDPI=true
+    SessionDir=/usr/share/wayland-sessions' | sudo tee /etc/sddm.conf > /dev/null
+    git clone https://github.com/shadowelite-sec/where-is-my-sddm-theme /tmp/sddm_theme
+    cd /tmp/sddm_theme
+    sudo ./install.sh
+    cd
+    sudo systemctl enable sddm.service
+}
+
+hypr_pkgs=(
+    
+    # requirements
+    meson 
+    cmake
+    bc
+    brightnessctl 
+    libpulse 
+    nodejs 
+    npm 
+    wlr-randr-git 
+    cpio 
+    gtkmm-4.0
+    gtk4-layer-shell
+    
+    # python dependencies 
+    python 
+    python3 
+    python-pip 
+    python-pipx
+    python-packaging
+    
+
+    # dots manager and file
+    stow
+    xdg-user-dirs 
+    
+    # hyprland core
+    hyprutils-git
+    hyprlang-git
+    hyprwayland-scanner-git 
+    #hyprland-git 
+    hyprland 
+    xdg-desktop-portal-hyprland-git 
+    hypridle-git 
+    hyprlock-git 
+    hyprpicker-git
+    hyprpolkitagent-git
+    
+    # audio
+    pipewire 
+    pipewire-pulse 
+    pipewire-alsa 
+    pipewire-audio 
+    pipewire-jack 
+    pipewire-jack 
+    gst-plugin-pipewire
+    wireplumber
+    waybar-git 
+    
+    # terminal
+    foot-git 
+    
+    # wallpaper
+    swww
+    waypaper
+    wallust-git
+
+    # logout
+    wlogout-git
+
+    # font
+    ttf-sourcecodepro-nerd
+
+    # scratchpad
+    pyprland
+    libinput-gestures
+    swaync
+    rofi-lbonn-wayland-git 
+
+    # waybar font
+    ttf-jetbrains-mono-nerd
+    
+    # clipboard
+    wl-clipboard 
+    wl-clip-persist-git 
+    clipse
+
+    # gtk & qt
+    kvantum 
+    qt5ct
+    qt6ct
+    qt5-wayland 
+    qt6-wayland
+    nwg-look-bin
+
+    # polkit agent
+    #polkit-kde-agent 
+
+    # display manager
+    sddm
+
+    # screen shot 
+    grim 
+    slurp 
+    swappy-git 
+
+    # pywal
+    python-pywal 
+    wal-telegram-git
+    sxiv
+    
+    # shell
+    jq 
+    zsh 
+    starship 
+   
+    # network
+    network-manager-applet
+    blueman
+    
+    # grub and splash
+    plymouth 
+    plymouth-theme-optimus-git 
+    grub-theme-cyberre
+
+    # OSD
+    syshud
+
+    # asus
+    permode
+
+    # Add more packages here...
+)
+
+user_pkgs=(
+    man 
+    man-pages 
+    
+    # browsers
+    vimb 
+    firefox-esr-bin
+
+    # social
+    #discord 
+    telegram-desktop 
+    vesktop-bin
+
+    # media
+    #nemo 
+    #nemo-fileroller 
+    #tumbler
+    dolphin
+    qt5-imageformats
+    archlinux-xdg-menu
+    ffmpegthumbs
+    ark
+    #ffmpegthumbnailer 
+    gvfs 
+    gvfs-mtp 
+    mpv 
+    mpv-thumbfast-git
+    qbittorrent
+    mugshot
+
+    # screen record
+    obs-studio 
+    #wlrobs-hg
+
+    # network
+    net-tools 
+    wireless_tools 
+    
+    # basic utils
+    wget 
+    unzip 
+    zip 
+    tar
+    bat 
+    unrar
+    p7zip 
+    grc
+    mlocate 
+
+    # document readers
+    zaread
+    zathura-pdf-mupdf
+    sioyek
+    pdfarranger
+
+    # LaTeX
+    texlive
+
+    # file manager
+    lf
+    #ranger-git 
+    
+    # shell
+    libsixel 
+    thefuck 
+    glow 
+    gum
+
+    # mouse and keybord rgb
+    piper 
+    openrgb
+
+    noto-fonts-emoji 
+    #betterdiscord-installer-bin 
+    
+    # termal manager
+    auto-cpufreq 
+    thermald
+
+    # code
+    visual-studio-code-bin 
+    neovim 
+    
+    # network
+    linux-wifi-hotspot 
+
+    # hyprvizer
+    binder_linux-dkms 
+    
+    # spotify and music
+    sptlrx-bin 
+    tauon-music-box 
+    #mpc 
+    #mpd 
+    #ncmpcpp 
+    cava-git 
+    pamixer
+    easyeffects
+    # Add more packages here...
+)
+
+nvidia_pkgs=(
+    nvidia-dkms 
+    nvidia-utils 
+    libva 
+    libva-nvidia-driver-git 
+    nvidia-prime
+)
+
+gameing=(
+    wine
+    lutris
+    rofi-games
+    steam
+    gamescope
+    gamemode
+    proton-ge-custom-bin
+    protonup-qt
+)
+
+aur_install 
+echo "Installing Hyprland Essential packages"
+install "${hypr_pkgs[@]}"
+install_dots
+
+echo "Installing User Applications and Utils"
+install "${user_pkgs[@]}"
+
+spotup
+
+echo "Installing Nvidia Pkgs"
+install "${nvidia_pkgs[@]}"
+
+nvidia_plymouth
+
+git_cfg 
+service_st
+home_ctl
+storage
+setup_sddm
+XDG_MENU_PREFIX=arch- kbuildsycoca6
+
+# clean
+rm ~/limitd
+rm -rf ~/yay
+mv .zshrc_2024* .zshrc
+echo "Installation complete."
+echo "Everything is Done , Now Reboot"

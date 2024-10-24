@@ -1,0 +1,54 @@
+#!/bin/bash
+
+sec_pkgs=(
+    
+    # reverse
+    gdb
+    radare2
+    ghidra 
+    ida-free 
+    ghex
+    pwndbg-git
+    python-pwntools 
+    python-tabulate 
+    python-pycryptodome 
+    edb-debugger
+    binwalk
+    imhex
+    binsider
+
+    # network
+    nmap
+    netcat
+    wireshark-qt 
+    bind
+
+    # exploitation
+    metasploit 
+    
+    # web 
+    burpsuite-pro
+    ffuf-bin
+    sqlmap
+    theharvester-git
+    feroxbuster-bin
+    pdtm-bin
+    httprobe
+    gau
+    
+    # Add more packages here...
+)
+
+write_burp(){
+sudo tee /bin/burpsuite-pro << EOF
+exec "$JAVA_HOME/bin/java" --add-opens=java.desktop/javax.swing=ALL-UNNAMED \\
+    --add-opens=java.base/java.lang=ALL-UNNAMED \\
+    --add-opens=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED \\
+    --add-opens=java.base/jdk.internal.org.objectweb.asm.tree=ALL-UNNAMED \\
+    --add-opens=java.base/jdk.internal.org.objectweb.asm.Opcodes=ALL-UNNAMED \\
+    -javaagent:/media/storage/assets/lostsec.jar \\
+    -noverify -jar /usr/share/burpsuite-pro/burpsuite-pro.jar
+EOF
+ java -jar /media/storage/assets/lostsec.jar
+ burpsuite-pro
+}

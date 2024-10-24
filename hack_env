@@ -1,0 +1,132 @@
+#!/bin/bash
+
+# Define colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NC='\033[0m' # No Color
+
+install() {
+    for pkg in "$@"; do
+        yay -Sy --noconfirm "$pkg"
+        if [ $? -ne 0 ]; then
+            echo -e "${RED}Failed to install $pkg. Check ~/installation.log for details.${NC}"
+            echo "$pkg" >> ~/installation.log
+        else
+            echo -e "${GREEN}Successfully installed $pkg.${NC}"
+        fi
+    done
+}
+
+setup_android_dir(){
+   sudo groupadd android-sdk
+   sudo gpasswd -a $USER android-sdk
+   sudo setfacl -R -m g:android-sdk:rwx /opt/android-sdk
+   sudo setfacl -R -m g:android-sdk:rwx /opt/android-sdk
+   newgrp android-sdk
+}
+
+write_pac(){
+  sudo tee /etc/pacman.conf << EOF
+[options]
+HoldPkg = pacman glibc
+Architecture = auto
+
+#IgnorePkg =
+#IgnoreGroup =
+HoldPkg = pacman glibc dracut kernel-install-for-dracut eos-dracut
+Architecture = auto
+
+Color
+ILoveCandy
+CheckSpace
+VerbosePkgLists
+ParallelDownloads = 5
+DownloadUser = alpm
+
+SigLevel = Required DatabaseOptional
+LocalFileSigLevel = Optional
+
+[endeavouros]
+SigLevel = PackageRequired
+Include = /etc/pacman.d/endeavouros-mirrorlist
+
+[core]
+Include = /etc/pacman.d/mirrorlist
+
+[extra]
+Include = /etc/pacman.d/mirrorlist
+
+[multilib]
+Include = /etc/pacman.d/mirrorlist
+
+[athena]
+SigLevel = Optional TrustedOnly
+Include = /etc/pacman.d/athena-mirrorlist
+
+[chaotic-aur]
+Include = /etc/pacman.d/chaotic-mirrorlist
+EOF
+}
+
+setup_repo(){
+  
+  sudo pacman-key --init 
+  # Setup athena
+  if [ ! -f /etc/pacman.d/athena-mirrorlist ]; then
+    sudo curl https://raw.githubusercontent.com/Athena-OS/athena/main/packages/os-specific/athena-mirrorlist/athena-mirrorlist -o /etc/pacman.d/athena-mirrorlist
+    sudo pacman-key --recv-keys A3F78B994C2171D5 --keyserver keys.openpgp.org
+    sudo pacman-key --lsign A3F78B994C2171D5
+    echo -e "${GREEN}Athena repo installed successfully.${NC}"
+  else
+      echo -e "${YELLOW}[!] Athena Repo Already Installed${NC}"
+  fi
+
+  # Setup chaotic
+  if [ ! -f /etc/pacman.d/chaotic-mirrorlist ]; then
+      sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+      sudo pacman-key --lsign-key 3056513887B78AEB
+      sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst'
+      sudo pacman -U --noconfirm 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+      echo -e "${GREEN}Chaotic repo installed successfully.${NC}"
+  else
+      echo -e "${YELLOW}[!] Chaotic Repo Already Installed${NC}"
+  fi
+  sudo pacman-key --init
+  sudo pacman-key --populate archlinux
+
+}
+
+main(){
+  if [ ! -f /etc/pacman.conf.bak ]; then
+    echo -e "${YELLOW}Installing Repos...${NC}"
+    sudo cp /etc/pacman.conf /etc/pacman.conf.bak
+    setup_repo
+    write_pac
+    install "${apps[@]}"
+    echo -e "${GREEN}Your old pacman.conf backed up in /etc/pacman.conf.bak${NC}"
+    if [ "$XDG_CURRENT_DESKTOP" == "Hyprland" ]; then
+      hyprctl dispatch exec "[float] athena-welcome"
+    else
+      athena-welcome
+    fi
+  else
+    echo -e "${YELLOW}[!] Seems your Repos Already Installed${NC}"
+  fi
+}
+
+apps=(
+  athena-welcome
+)
+
+# main
+if command -v yay > /dev/null 2>&1; then
+  command -v alacritty >/dev/null 2>&1 || sudo pacman -S --noconfirm alacritty
+  main
+else
+  echo -e "${RED}[!] Pkg yay Not found${NC}"
+  sudo pacman -S --needed git base-devel && git clone https://aur.archlinux.org/yay.git && cd yay && makepkg -sifr --noconfirm
+  cd ..; [[ -d yay ]] && rm -rf yay
+  echo -e "${GREEN}yay installed. Rerunning script...${NC}"
+  exec "$0" "$@"
+fi
